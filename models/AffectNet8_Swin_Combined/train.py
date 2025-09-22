@@ -11,13 +11,13 @@ from torch.optim import lr_scheduler
 from tqdm import tqdm
 
 # Load the annotations for training and validation from separate CSV files
-IMAGE_FOLDER = "/data/AffectNet/train_set/images/"
-IMAGE_FOLDER_TEST = "/data/AffectNet/val_set/images/"
+IMAGE_FOLDER = "C:/Users/marco/Documents/Datasets/AffectNet/train_set/images/"
+IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/Datasets/AffectNet/val_set/images/"
 train_annotations_path = (
-    "../../affectnet_annotations/train_set_annotation_without_lnd.csv"
+    "C:/Users/marco/Documents/Datasets/train_set_annotation_without_lnd.csv"
 )
 valid_annotations_path = (
-    "../../affectnet_annotations/val_set_annotation_without_lnd.csv"
+    "C:/Users/marco/Documents/Datasets/val_set_annotation_without_lnd.csv"
 )
 train_annotations_df = pd.read_csv(train_annotations_path)
 valid_annotations_df = pd.read_csv(valid_annotations_path)
