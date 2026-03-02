@@ -12,13 +12,13 @@ from tqdm import tqdm
 
 
 # Load the annotations for training and validation from separate CSV files
-IMAGE_FOLDER = "C:/Users/marco/Documents/Datasets/AffectNet/train_set/train_set/images/"
-IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/Datasets/AffectNet/val_set/val_set/images/"
+IMAGE_FOLDER = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/train_set/train_set/images/"
+IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set/val_set/images/"
 train_annotations_path = (
-    "C:/Users/marco/Documents/Datasets/AffectNet/train_set_annotation_without_lnd.csv"
+    "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/train_set_annotation_without_lnd.csv"
 )
 valid_annotations_path = (
-    "C:/Users/marco/Documents/Datasets/AffectNet/val_set_annotation_without_lnd.csv"
+    "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set_annotation_without_lnd.csv"
 )
 train_annotations_df = pd.read_csv(train_annotations_path)
 valid_annotations_df = pd.read_csv(valid_annotations_path)
@@ -149,7 +149,7 @@ if __name__ == "__main__":  # <-- Added guard
 
     # ***** Train the model *****
     print("--- Start training ---")
-    scaler = torch.cuda.amp.GradScaler()
+    scaler = torch.amp.GradScaler()
     best_valid_loss = float("inf")
 
     for epoch in range(NUM_EPOCHS):

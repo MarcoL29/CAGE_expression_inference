@@ -11,8 +11,8 @@ from sklearn.model_selection import train_test_split
 
 
 # ====== Paths (reuse your existing ones) ======
-IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/Datasets/AffectNet/val_set/val_set/images/"
-VALID_ANNOTATIONS_PATH = "C:/Users/marco/Documents/Datasets/AffectNet/val_set_annotation_without_lnd.csv"
+IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set/val_set/images/"
+VALID_ANNOTATIONS_PATH = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set_annotation_without_lnd.csv"
 
 # ====== Eval params ======
 BATCHSIZE = 128
