@@ -13,8 +13,8 @@ from PIL import Image
 from tqdm import tqdm
 
 # ========= Paths (reuse your existing ones) =========
-IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/Datasets/AffectNet/val_set/val_set/images/"
-valid_annotations_path = "C:/Users/marco/Documents/Datasets/AffectNet/val_set_annotation_without_lnd.csv"
+IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set/val_set/images/"
+valid_annotations_path = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set_annotation_without_lnd.csv"
 CHECKPOINT_PATH = "./model.pt"
 SAVE_PRED_CSV = "./val_cls_reg_predictions.csv"
 
