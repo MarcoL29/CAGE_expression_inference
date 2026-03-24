@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import timm
 import torch
 import torchvision.transforms as transforms
 import torchvision.models as models
@@ -11,13 +12,13 @@ from torch.optim import lr_scheduler
 from tqdm import tqdm
 
 # Load the annotations for training and validation from separate CSV files
-IMAGE_FOLDER = "C:/Users/marco/Documents/Other_Datasets/AffectNet/train_set/images/"
-IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/Other_Datasets/AffectNet/val_set/images/"
+IMAGE_FOLDER = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/train_set/train_set/images/"
+IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set/val_set/images/"
 train_annotations_path = (
-    "C:/Users/marco/Documents/Other_Datasets/train_set_annotation_without_lnd.csv"
+    "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/train_set_annotation_without_lnd.csv"
 )
 valid_annotations_path = (
-    "C:/Users/marco/Documents/Other_Datasets/val_set_annotation_without_lnd.csv"
+    "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set_annotation_without_lnd.csv"
 )
 train_annotations_df = pd.read_csv(train_annotations_path)
 valid_annotations_df = pd.read_csv(valid_annotations_path)
@@ -27,7 +28,14 @@ valid_annotations_df = pd.read_csv(valid_annotations_path)
 BATCHSIZE = 128
 NUM_EPOCHS = 20
 LR = 4e-5
+NUM_WORKERS = 0
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+MODEL = timm.create_model(
+    "swin_base_patch4_window7_224",
+    pretrained=True,
+    num_classes=10
+)
+MODEL.to(DEVICE)
 
 
 # **** Create dataset and data loaders ****
@@ -109,18 +117,12 @@ valid_dataset = CustomDataset(
     balance=False,
 )
 train_loader = DataLoader(
-    train_dataset, batch_size=BATCHSIZE, shuffle=True, num_workers=48
+    train_dataset, batch_size=BATCHSIZE, shuffle=True, num_workers=NUM_WORKERS
 )
 valid_loader = DataLoader(
-    valid_dataset, batch_size=BATCHSIZE, shuffle=False, num_workers=48
+    valid_dataset, batch_size=BATCHSIZE, shuffle=False, num_workers=NUM_WORKERS
 )
 
-# * Define the model *
-
-# Initialize the model
-MODEL = models.swin_v2_t(weights="DEFAULT")
-MODEL.head = torch.nn.Linear(in_features=768, out_features=10, bias=True)
-MODEL.to(DEVICE)
 # Define (weighted) loss function
 weights = torch.tensor(
     [0.015605, 0.008709, 0.046078, 0.083078, 0.185434, 0.305953, 0.046934, 0.30821]

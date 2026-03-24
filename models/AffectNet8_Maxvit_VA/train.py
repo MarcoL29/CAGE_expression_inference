@@ -11,13 +11,13 @@ from torch.optim import lr_scheduler
 from tqdm import tqdm
 
 # Load the annotations for training and validation from separate CSV files
-IMAGE_FOLDER = "C:/Users/marco/Documents/Other_Datasets/AffectNet/train_set/train_set/images/"
-IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/Other_Datasets/AffectNet/val_set/val_set/images/"
+IMAGE_FOLDER = "C:/Users/marco/Documents/AI.EVENT/Datasets/Emotion/AffectNet/train_aligned/images/"
+IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/AI.EVENT/Datasets/Emotion/AffectNet/val_aligned/images/"
 train_annotations_path = (
-    "C:/Users/marco/Documents/Other_Datasets/AffectNet/train_set_annotation_without_lnd.csv"
+    "C:/Users/marco/Documents/AI.EVENT/Datasets/Emotion/AffectNet/train/train_set_annotation_without_lnd.csv"
 )
 valid_annotations_path = (
-    "C:/Users/marco/Documents/Other_Datasets/AffectNet/val_set_annotation_without_lnd.csv"
+    "C:/Users/marco/Documents/AI.EVENT/Datasets/Emotion/AffectNet/val/val_set_annotation_without_lnd.csv"
 )
 train_annotations_df = pd.read_csv(train_annotations_path)
 valid_annotations_df = pd.read_csv(valid_annotations_path)
@@ -26,7 +26,7 @@ valid_annotations_df = pd.read_csv(valid_annotations_path)
 # Set parameters
 BATCHSIZE = 128
 NUM_EPOCHS = 20
-LR = 4e-5
+LR = 5e-5
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 NUM_WORKERS = 0
 MODEL = models.maxvit_t(weights="DEFAULT")
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     )
     MODEL.to(DEVICE)
     MODEL.load_state_dict(
-        torch.load("../AffectNet8_Maxvit_Combined/model.pt")
+        torch.load("../AffectNet8_Maxvit_Combined/model_aligned.pt")
     )  # Lädt die Gewichte des Combined Models
     MODEL.classifier = nn.Sequential(
         nn.AdaptiveAvgPool2d(1),
@@ -244,4 +244,4 @@ if __name__ == "__main__":
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
             print(f"Saving model at epoch {epoch+1}")
-            torch.save(MODEL.state_dict(), "./model.pt")  # Save the best model
+            torch.save(MODEL.state_dict(), "./model_aligned.pt")  # Save the best model

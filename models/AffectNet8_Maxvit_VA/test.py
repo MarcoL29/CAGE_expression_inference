@@ -11,13 +11,13 @@ from sklearn.model_selection import train_test_split
 
 
 # ====== Paths (reuse your existing ones) ======
-IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set/val_set/images/"
-VALID_ANNOTATIONS_PATH = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set_annotation_without_lnd.csv"
+IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/AI.EVENT/Datasets/Emotion/AffectNet/val_aligned/images/"
+VALID_ANNOTATIONS_PATH = "C:/Users/marco/Documents/AI.EVENT/Datasets/Emotion/AffectNet/val/val_set_annotation_without_lnd.csv"
 
 # ====== Eval params ======
 BATCHSIZE = 128
 NUM_WORKERS = 0
-CHECKPOINT_PATH = "./model.pt"     # path where you saved best model
+CHECKPOINT_PATH = "./model_aligned.pt"     # path where you saved best model
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SAVE_PRED_CSV = "./val_predictions.csv"
 

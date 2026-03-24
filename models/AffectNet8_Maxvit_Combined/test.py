@@ -13,9 +13,9 @@ from PIL import Image
 from tqdm import tqdm
 
 # ========= Paths (reuse your existing ones) =========
-IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set/val_set/images/"
-valid_annotations_path = "C:/Users/marco/Documents/AI.EVENT/Datasets/Other_Datasets/AffectNet/val_set_annotation_without_lnd.csv"
-CHECKPOINT_PATH = "./model.pt"
+IMAGE_FOLDER_TEST = "C:/Users/marco/Documents/AI.EVENT/Datasets/Emotion/AffectNet/val/temp/"
+valid_annotations_path = "C:/Users/marco/Documents/AI.EVENT/Datasets/Emotion/AffectNet/val/val_set_annotation_without_lnd.csv"
+CHECKPOINT_PATH = "./model_maxvit_tiny.pt"
 SAVE_PRED_CSV = "./val_cls_reg_predictions.csv"
 
 # ========= Eval params =========
@@ -36,10 +36,39 @@ class ValDataset(Dataset):
     Expects CSV with at least columns: ['number','exp','valence','arousal'] in that order (like your training).
     Returns (image, class_idx, labels[valence,arousal], number)
     """
-    def __init__(self, dataframe: pd.DataFrame, root_dir: str, transform=None):
+    def __init__(self, dataframe: pd.DataFrame, root_dir: str, transform=None, index_images: bool = True):
         self.df = dataframe.reset_index(drop=True)
         self.root_dir = root_dir
         self.transform = transform
+        self._image_index: Dict[int, str] = {}
+
+        if index_images:
+            self._image_index = self._build_image_index(self.root_dir)
+
+    @staticmethod
+    def _build_image_index(root_dir: str) -> Dict[int, str]:
+        """Recursively index images under root_dir by numeric filename stem.
+
+        Supports layouts like:
+          root_dir/<class_number>/<number>.jpg
+          root_dir/**/<number>.(jpg|jpeg|png)
+        """
+        exts = {".jpg", ".jpeg", ".png"}
+        index: Dict[int, str] = {}
+        for dirpath, _, filenames in os.walk(root_dir):
+            for name in filenames:
+                ext = os.path.splitext(name)[1].lower()
+                if ext not in exts:
+                    continue
+                stem = os.path.splitext(name)[0]
+                try:
+                    img_id = int(stem)
+                except ValueError:
+                    continue
+                # Keep first occurrence if duplicates exist
+                if img_id not in index:
+                    index[img_id] = os.path.join(dirpath, name)
+        return index
 
     def __len__(self) -> int:
         return len(self.df)
@@ -47,12 +76,30 @@ class ValDataset(Dataset):
     def __getitem__(self, idx: int):
         row = self.df.iloc[idx]
         img_id = int(row["number"])
-        img_path = os.path.join(self.root_dir, f"{img_id}.jpg")
-        if not os.path.exists(img_path):
-            raise FileNotFoundError(f"Missing image: {img_path}")
-        image = Image.open(img_path).convert("RGB")
-
         cls = int(row["exp"])
+
+        img_path = None
+        # 1) Fast path: lookup from recursive index (handles class subfolders)
+        if self._image_index:
+            img_path = self._image_index.get(img_id)
+
+        # 2) Fallback: common AffectNet layout root/<class>/<id>.jpg
+        if not img_path:
+            candidate = os.path.join(self.root_dir, str(cls), f"{img_id}.jpg")
+            if os.path.exists(candidate):
+                img_path = candidate
+
+        # 3) Fallback: old flat layout root/<id>.jpg
+        if not img_path:
+            candidate = os.path.join(self.root_dir, f"{img_id}.jpg")
+            if os.path.exists(candidate):
+                img_path = candidate
+
+        if not img_path or not os.path.exists(img_path):
+            raise FileNotFoundError(
+                f"Missing image for id={img_id}. Expected under: {self.root_dir} (including subfolders like {os.path.join(self.root_dir, '<class_number>', '<id>.jpg')})"
+            )
+        image = Image.open(img_path).convert("RGB")
         labels = torch.tensor(row.iloc[2:4].values, dtype=torch.float32)  # valence, arousal
 
         if self.transform:
